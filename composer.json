@@ -1,0 +1,21 @@
+{
+	"name": "mikulas/nette-plugins-migrationpanel",
+	"description": "Nette Debugger panel for Clevis Migrations",
+	"type": "library",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Mikulas Dite",
+			"email": "mikulas@dite.pro"
+		}
+	],
+	"require": {
+		"php": "~5.3"
+	},
+	"suggest": {
+		"clevis/migration": "master"
+	},
+	"autoload": {
+		"classmap": ["Migration/"]
+	}
+}
