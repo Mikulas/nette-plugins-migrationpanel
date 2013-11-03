@@ -160,7 +160,28 @@ class NettePanel extends Nette\Application\UI\Control implements Nette\Diagnosti
 		$template->meta = $meta;
 		$template->skips = $skips;
 
+		$url = $this->getMigrationsUrl();
+		$template->showLinks = $url && strpos(get_headers($url)[0], '200 OK') !== FALSE;
+		$template->url = $url;
+
 		return $template;
+	}
+
+	private function getMigrationsUrl()
+	{
+		$s = &$_SERVER;
+		$ssl = (!empty($s['HTTPS']) && $s['HTTPS'] == 'on') ? true:false;
+		$sp = strtolower($s['SERVER_PROTOCOL']);
+		$protocol = substr($sp, 0, strpos($sp, '/')) . (($ssl) ? 's' : '');
+		$port = $s['SERVER_PORT'];
+		$port = ((!$ssl && $port=='80') || ($ssl && $port=='443')) ? '' : ':'.$port;
+		$host = isset($s['HTTP_X_FORWARDED_HOST']) ? $s['HTTP_X_FORWARDED_HOST'] : isset($s['HTTP_HOST']) ? $s['HTTP_HOST'] : $s['SERVER_NAME'];
+		$url = $protocol . '://' . $host . $port . $s['REQUEST_URI'];
+		if (strpos('/www/', $url) === FALSE)
+		{
+			return FALSE;
+		}
+		return preg_replace('~/www/.*$~', '/migrations/', $url);
 	}
 
 	private function getFileTemplate($templateFilePath)
