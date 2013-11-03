@@ -13,6 +13,9 @@ use Nette;
 class NettePanel extends Nette\Application\UI\Control implements Nette\Diagnostics\IBarPanel
 {
 
+	/** @var string path */
+	private $appDir;
+
 	/** @var DibiConnection */
 	private $dibi;
 
@@ -22,9 +25,10 @@ class NettePanel extends Nette\Application\UI\Control implements Nette\Diagnosti
 	/** @var array findNewMigrations cache */
 	private $tmp;
 
-	public function __construct(DibiConnection $dibi, \Nette\Application\Application $application)
+	public function __construct($appDir, DibiConnection $dibi, \Nette\Application\Application $application)
 	{
 		parent::__construct($application->getPresenter(), $this->getId());
+		$this->appDir = $appDir;
 		$this->dibi = $dibi;
 		$this->finder = new Finders\MultipleDirectories;
 	}
@@ -95,7 +99,7 @@ class NettePanel extends Nette\Application\UI\Control implements Nette\Diagnosti
 
 		/** see https://www.kernel.org/pub/software/scm/git/docs/git-show.html */
 		$format = "%H\x04%aN\x04%at\x04%s"; // hash, author name, author date as unix timestamp, subject
-		exec('cd ' . escapeshellarg(__DIR__) . ' && git log --pretty=format:' . $format . ' ' . escapeshellarg($migration->path), $out);
+		exec('cd ' . escapeshellarg($this->appDir) . ' && git log --pretty=format:' . $format . ' ' . escapeshellarg($migration->path), $out);
 		if (!$out)
 		{
 			return FALSE;
