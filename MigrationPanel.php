@@ -33,7 +33,9 @@ class NettePanel extends Nette\Application\UI\Control implements Nette\Diagnosti
 		$this->finder = new Finders\MultipleDirectories;
 	}
 
-	/** @return array file => DibiRow */
+	/**
+	 * @return array file => DibiRow
+	 */
 	protected function getRunMigrations()
 	{
 		try
@@ -49,11 +51,16 @@ class NettePanel extends Nette\Application\UI\Control implements Nette\Diagnosti
 		}
 	}
 
+	/**
+	 * @param string $dir filesystem path
+	 *
+	 * @example addDirectory(%appDir%/../migrations/data)
+	 */
 	public function addDirectory($dir)
 	{
 		if (!file_exists($dir))
 		{
-			throw new IOException; // @TODO fix
+			throw new \InvalidArgumentException("Directory $dir does not exist");
 		}
 		$this->finder->addDirectory($dir);
 	}
@@ -158,13 +165,16 @@ class NettePanel extends Nette\Application\UI\Control implements Nette\Diagnosti
 
 	private function getFileTemplate($templateFilePath)
 	{
-		if (file_exists($templateFilePath)) {
+		if (file_exists($templateFilePath))
+		{
 			$template = new Nette\Templating\FileTemplate($templateFilePath);
 			$template->onPrepareFilters[] = callback($this, 'templatePrepareFilters');
 			$template->registerHelperLoader('\Nette\Templating\Helpers::loader');
 			$template->basePath = realpath(__DIR__);
 			return $template;
-		} else {
+		}
+		else
+		{
 			throw new Nette\FileNotFoundException('Requested template file is not exist.');
 		}
 	}
@@ -174,8 +184,6 @@ class NettePanel extends Nette\Application\UI\Control implements Nette\Diagnosti
 		$template->registerFilter($latte = new Nette\Latte\Engine());
 		$set = Nette\Latte\Macros\MacroSet::install($latte->getCompiler());
 		$set->addMacro('src', NULL, NULL, 'echo \'src="\'.\Nette\Templating\Helpers::dataStream(file_get_contents(%node.word)).\'"\'');
-		$set->addMacro('stylesheet', 'echo \'<style type="text/css">\'.file_get_contents(%node.word).\'</style>\'');
-		$set->addMacro('clickableDump', 'echo \Nette\Diagnostics\Helpers::clickableDump(%node.word)');
 	}
 
 }
