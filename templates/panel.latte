@@ -1,0 +1,32 @@
+{**
+ * @param string $basePath Path to directory where compnent is situated
+ * @param array $meta [file => [hash, author, DateTime, subject]]
+ *}
+<h1 id="nette-debug-session-panel-title">
+	<img n:src="{$basePath}/templates/icon.png" width="16" height="16" />
+	{if count($meta)}{count($meta)} new migration{if count($meta) > 1}s{/if}{/if}
+</h1>
+<div id="nette-debug-session-panel">
+	<table>
+		<thead>
+			<tr>
+				<th>Migration</th>
+				<th>Commited</th>
+				<th>Author</th>
+				<th>Subject</th>
+			</tr>
+		</thead>
+		<tbody>
+			{var $lastHash = NULL}
+			<tr n:foreach="$meta as $file => $info">
+				<td>{$file}</td>
+				{if $info->hash !== $lastHash}
+					<td rowspan="{$skips[$info->hash]}">{$info->time|date:'j. n. Y G:i'}</td>
+					<td rowspan="{$skips[$info->hash]}">{$info->author}</td>
+					<td rowspan="{$skips[$info->hash]}">{$info->subject}</td>
+				{/if}
+				{var $lastHash = $info->hash}
+			</tr>
+		</tbody>
+	</table>
+</div>
